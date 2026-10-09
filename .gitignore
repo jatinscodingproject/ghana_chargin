@@ -1,0 +1,53 @@
+# Node modules
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+logs/*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage
+/.nyc_output
+
+# Dist and build outputs
+/dist
+/build
+
+# Temp files
+tmp
+temp
+*.tmp
+
+# Cache files
+.cache
+.next
+out
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# PM2 logs
+.pids
+pm2-*.log
+
+# Others
+*.gz
+*.zip
