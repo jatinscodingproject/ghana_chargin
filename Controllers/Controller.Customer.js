@@ -81,11 +81,7 @@ const Customer = async (req, res) => {
             });
         }
 
-        if (!subid) {
-            return res.status(404).json({
-                message: "Phone number not from traffic",
-            });
-        }
+       
 
         const user = await User.findOne({
             where: {
@@ -113,45 +109,6 @@ const Customer = async (req, res) => {
             ...customerData,
             is_chargin: 0,
         });
-
-        // Existing postback integrations
-        const postbacks = {
-            "https://serenai.betech.lk": "SerenAI",
-            "https://lumabond.betech.lk": "Luma",
-            "https://dermascan.betech.lk": "DSCAN",
-            "https://quizzy.betech.lk": "QPLAY",
-        };
-
-        const service = postbacks[origin];
-
-        if (service) {
-            try {
-                const postbackUrl = new URL(
-                    "https://url.promotrking.com/advertiser/advertiser-callback"
-                );
-
-                postbackUrl.search = new URLSearchParams({
-                    client: "BTEK",
-                    service,
-                    publisher: "BMD",
-                    ext_ref: subid,
-                }).toString();
-
-                const response = await axios.get(
-                    postbackUrl.toString()
-                );
-
-                console.log(
-                    "Postback sent successfully:",
-                    response.data
-                );
-            } catch (postbackError) {
-                console.error(
-                    "Postback failed:",
-                    postbackError.message
-                );
-            }
-        }
 
         return res.status(200).json({
             message: "Customer stored successfully",
