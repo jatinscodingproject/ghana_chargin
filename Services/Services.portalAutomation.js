@@ -184,37 +184,54 @@ const clickConfirmButton = async ({
 };
 
 async function swipeToConfirm(page) {
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     try {
-        await page.waitForSelector("#container", { visible: true, timeout: 10000 });
-        await page.waitForSelector("#button", { visible: true, timeout: 10000 });
+        await page.waitForSelector("#container", {
+            visible: true,
+            timeout: 10000,
+        });
+
+        await page.waitForSelector("#button", {
+            visible: true,
+            timeout: 10000,
+        });
+
         const container = await page.$("#container");
         const button = await page.$("#button");
+
         const containerBox = await container.boundingBox();
         const buttonBox = await button.boundingBox();
+
         if (!containerBox || !buttonBox) {
             throw new Error("Slider coordinates not available");
         }
+
         const startX = buttonBox.x + buttonBox.width / 2;
         const startY = buttonBox.y + buttonBox.height / 2;
-        const endX = containerBox.x + containerBox.width + 30;
+        const endX = containerBox.x + containerBox.width - buttonBox.width / 2;
+
         console.log(`➡️ Start: ${startX}, ${startY}`);
-        console.log(`➡️ End:   ${endX}, ${startY}`);
+        console.log(`➡️ End: ${endX}, ${startY}`);
+
         await page.mouse.move(startX, startY);
-        await sleep(100);
         await page.mouse.down();
-        await sleep(100);
-        await page.mouse.move(endX, startY, { steps: 40 });
-        await sleep(300);
-        await page.mouse.move(endX, startY);
-        await sleep(150);
+
+        // Faster drag: fewer steps, no intermediate waits.
+        await page.mouse.move(endX, startY, { steps: 5 });
         await page.mouse.up();
-        await sleep(500);
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         const after = await button.boundingBox();
         const maxX = containerBox.x + containerBox.width - buttonBox.width;
         const atEnd = after && after.x >= maxX - 5;
-        console.log(atEnd ? "✅ Slider stopped at 100%" : "⚠️ Slider did not stay at the end");
-        return atEnd;
+
+        console.log(
+            atEnd
+                ? "✅ Slider stopped at 100%"
+                : "⚠️ Slider did not stay at the end"
+        );
+
+        return !!atEnd;
     } catch (error) {
         console.error("❌ Slider error:", error.message);
         return false;
