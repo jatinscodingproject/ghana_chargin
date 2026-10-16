@@ -1,0 +1,392 @@
+[
+  {
+    "type": "request",
+    "url": "http://102.133.198.92/Redirect?OfferCode=9916710032&mobileNumber=233542993921&redirectUrl=http%3A%2F%2Fmobile.arenaxpro.com%2Fredirect&transactionID=9720238716903670",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:16.169Z"
+  },
+  {
+    "type": "response",
+    "url": "http://102.133.198.92/Redirect?OfferCode=9916710032&mobileNumber=233542993921&redirectUrl=http%3A%2F%2Fmobile.arenaxpro.com%2Fredirect&transactionID=9720238716903670",
+    "status": 302,
+    "timestamp": "2026-10-11T11:56:16.460Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/Home?id=TID202610111791719777917f258d72752db&transactionID=9720238716903670",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:16.512Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/Home?id=TID202610111791719777917f258d72752db&transactionID=9720238716903670",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:17.370Z"
+  },
+  {
+    "type": "request",
+    "url": "https://www.googletagmanager.com/gtag/js?id=G-XY981NCTHS",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.100Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/materialdesignicons/css/materialdesignicons.min.css",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.104Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/bootstrap/css/bootstrap.min.css",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.169Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/sweetalert/sweetalert.min.css",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.174Z"
+  },
+  {
+    "type": "request",
+    "url": "https://mtn-ghana.mfilterit.org/_static/css/style.css",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.180Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/styles/style.css",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.185Z"
+  },
+  {
+    "type": "response",
+    "url": "https://mtn-ghana.mfilterit.org/_static/css/style.css",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.187Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/jquery/jquery.min.js",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.199Z"
+  },
+  {
+    "type": "response",
+    "url": "https://www.googletagmanager.com/gtag/js?id=G-XY981NCTHS",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.200Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/bootstrap/js/bootstrap.min.js",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.212Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/sweetalert/sweetalert.min.js",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.215Z"
+  },
+  {
+    "type": "request",
+    "url": "https://mtn-ghana.mfilterit.org/_static/js/mfilter.ghana.bundle.v1.js",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.218Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/images/left-arrow.png",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.219Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/images/mtn_black.png",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.223Z"
+  },
+  {
+    "type": "response",
+    "url": "https://mtn-ghana.mfilterit.org/_static/js/mfilter.ghana.bundle.v1.js",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.224Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/images/common-banner.png",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:18.236Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/jquery/jquery.min.js",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.500Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/sweetalert/sweetalert.min.css",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.546Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/bootstrap/css/bootstrap.min.css",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.553Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/styles/style.css",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.668Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/sweetalert/sweetalert.min.js",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.731Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/materialdesignicons/css/materialdesignicons.min.css",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:18.796Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/bootstrap/js/bootstrap.min.js",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.015Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/images/common-banner.png",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.373Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/fonts/MTNBrighterSans-Regular.ttf",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:19.445Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/images/mtn_black.png",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.455Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/images/left-arrow.png",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.477Z"
+  },
+  {
+    "type": "request",
+    "url": "https://request-context.mfilterit.org/",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:19.629Z"
+  },
+  {
+    "type": "request",
+    "url": "https://request-context.mfilterit.org/",
+    "method": "OPTIONS",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:19.644Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/fonts/MTNBrighterSans-Regular.ttf",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.663Z"
+  },
+  {
+    "type": "response",
+    "url": "https://request-context.mfilterit.org/",
+    "status": 204,
+    "timestamp": "2026-10-11T11:56:19.730Z"
+  },
+  {
+    "type": "response",
+    "url": "https://request-context.mfilterit.org/",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:19.792Z"
+  },
+  {
+    "type": "request",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za208zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=1&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=3770",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:19.887Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/updatePaymentMethod",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:19.966Z"
+  },
+  {
+    "type": "request",
+    "url": "https://cg.mtn.com.gh/favicon.ico",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:20.116Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/updatePaymentMethod",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:20.152Z"
+  },
+  {
+    "type": "response",
+    "url": "https://cg.mtn.com.gh/favicon.ico",
+    "status": 404,
+    "timestamp": "2026-10-11T11:56:20.257Z"
+  },
+  {
+    "type": "response",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za208zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=1&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=3770",
+    "status": 204,
+    "timestamp": "2026-10-11T11:56:20.666Z"
+  },
+  {
+    "type": "request",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=2&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=portal_page&_ee=1&ep.event_category=Page%20View&ep.mobile_number=233542993921&ep.cg_id=TID202610111791719777917f258d72752db&ep.offer_name=ARBEES%20WORLD%20ESPORTS&ep.offer_price=1.50&_et=12&tfd=4468",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:20.686Z"
+  },
+  {
+    "type": "failed",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "error": "NS_ERROR_ABORT",
+    "timestamp": "2026-10-11T11:56:20.696Z"
+  },
+  {
+    "type": "request",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:20.700Z"
+  },
+  {
+    "type": "request",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AEAAAAQ&ae=a&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=3&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=scroll&epn.percent_scrolled=90&_et=654&tfd=4623",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:20.769Z"
+  },
+  {
+    "type": "request",
+    "url": "https://d13mv6hpnkljjo.cloudfront.net/get-image?tid=1791719780&g=TID202610111791719777917f258d72752db&c=167&p=ARBEES+WORLD+ESPORTS&d=233542993921&cg_data=%7B%22cg_id%22%3A%22TID202610111791719777917f258d72752db%22%2C%22msisdn%22%3A%22233542993921%22%2C%22cp_id%22%3A%22167%22%2C%22offer_name%22%3A%22ARBEES+WORLD+ESPORTS%22%2C%22offer_price%22%3A%221.50%22%2C%22identifier%22%3A%22c3SG1j7KTq5Cti6pEx1RFss-P3YMCt3aSV-Z7142dFVbtbqTJKarCZB8aUMjzQ___true%22%2C%22nonce%22%3A%2240a861eb-8c5e-429e-ad55-cf7cd489f13f%22%2C%22aks%22%3A%22false%22%7D",
+    "method": "GET",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:20.804Z"
+  },
+  {
+    "type": "response",
+    "url": "https://d13mv6hpnkljjo.cloudfront.net/get-image?tid=1791719780&g=TID202610111791719777917f258d72752db&c=167&p=ARBEES+WORLD+ESPORTS&d=233542993921&cg_data=%7B%22cg_id%22%3A%22TID202610111791719777917f258d72752db%22%2C%22msisdn%22%3A%22233542993921%22%2C%22cp_id%22%3A%22167%22%2C%22offer_name%22%3A%22ARBEES+WORLD+ESPORTS%22%2C%22offer_price%22%3A%221.50%22%2C%22identifier%22%3A%22c3SG1j7KTq5Cti6pEx1RFss-P3YMCt3aSV-Z7142dFVbtbqTJKarCZB8aUMjzQ___true%22%2C%22nonce%22%3A%2240a861eb-8c5e-429e-ad55-cf7cd489f13f%22%2C%22aks%22%3A%22false%22%7D",
+    "status": 200,
+    "timestamp": "2026-10-11T11:56:20.832Z"
+  },
+  {
+    "type": "response",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=2&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=portal_page&_ee=1&ep.event_category=Page%20View&ep.mobile_number=233542993921&ep.cg_id=TID202610111791719777917f258d72752db&ep.offer_name=ARBEES%20WORLD%20ESPORTS&ep.offer_price=1.50&_et=12&tfd=4468",
+    "status": 204,
+    "timestamp": "2026-10-11T11:56:21.359Z"
+  },
+  {
+    "type": "response",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AEAAAAQ&ae=a&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=3&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=scroll&epn.percent_scrolled=90&_et=654&tfd=4623",
+    "status": 204,
+    "timestamp": "2026-10-11T11:56:21.503Z"
+  },
+  {
+    "type": "failed",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "error": "NS_ERROR_ABORT",
+    "timestamp": "2026-10-11T11:56:22.158Z"
+  },
+  {
+    "type": "request",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:22.192Z"
+  },
+  {
+    "type": "failed",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "error": "NS_ERROR_ABORT",
+    "timestamp": "2026-10-11T11:56:22.938Z"
+  },
+  {
+    "type": "request",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:22.952Z"
+  },
+  {
+    "type": "failed",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "error": "NS_ERROR_ABORT",
+    "timestamp": "2026-10-11T11:56:26.026Z"
+  },
+  {
+    "type": "request",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:26.124Z"
+  },
+  {
+    "type": "request",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=4&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=dynamic_image_method_call&_ee=1&ep.event_category=InitiateMfilterCall&ep.mobile_number=233542993921&ep.cg_id=TID202610111791719777917f258d72752db&ep.offer_name=ARBEES%20WORLD%20ESPORTS&ep.offer_price=1.50&_et=138&tfd=9661",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:26.299Z"
+  },
+  {
+    "type": "response",
+    "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-XY981NCTHS&gtm=45je6a72v9221803792za200zd9221803792xf1&_p=1791719777670&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&cid=2020835817.1791719780&frm=0&ngs=1&pscdl=noapi&rcb=4&sr=1280x720&ul=en-us&_s=4&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153~121046263~121046271~121246026~121246034&sid=1791719779&sct=1&seg=0&dl=https%3A%2F%2Fcg.mtn.com.gh%2FHome%3Fid%3DTID202610111791719777917f258d72752db%26transactionID%3D9720238716903670&dt=Consent%20Gateway&en=dynamic_image_method_call&_ee=1&ep.event_category=InitiateMfilterCall&ep.mobile_number=233542993921&ep.cg_id=TID202610111791719777917f258d72752db&ep.offer_name=ARBEES%20WORLD%20ESPORTS&ep.offer_price=1.50&_et=138&tfd=9661",
+    "status": 204,
+    "timestamp": "2026-10-11T11:56:26.653Z"
+  },
+  {
+    "type": "failed",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "error": "NS_ERROR_ABORT",
+    "timestamp": "2026-10-11T11:56:26.916Z"
+  },
+  {
+    "type": "request",
+    "url": "https://session-recording.mfilterit.net/api/sessions/save-recording?sc=nigeria",
+    "method": "POST",
+    "resourceType": null,
+    "timestamp": "2026-10-11T11:56:26.933Z"
+  }
+]

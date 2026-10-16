@@ -81,8 +81,6 @@ const Customer = async (req, res) => {
             });
         }
 
-       
-
         const user = await User.findOne({
             where: {
                 msisdn,

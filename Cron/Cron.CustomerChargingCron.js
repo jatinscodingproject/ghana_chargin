@@ -83,15 +83,12 @@ cron.schedule("* * * * *", async () => {
                         headers["user-agent"] ||
                         customer.user_agent ||
                         undefined,
-                    origin: headers.origin || customer.origin || undefined,
-                    referer: headers.referer || customer.referer || undefined,
                     msisdn: headers.msisdn || customer.msisdn || undefined,
                 };
 
                 console.log(`🔄 Processing customer: ${customer.msisdn}`);
 
                 const success = await clickConfirmButton({
-                    origin: customer.origin,
                     msisdn: customer.msisdn,
                     client_ip: customer.client_ip,
                     transactionId: customer.transaction_id,
