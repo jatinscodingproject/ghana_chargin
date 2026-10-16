@@ -20,6 +20,9 @@ cron.schedule("* * * * *", async () => {
         const customers = await User.findAll({
             where: {
                 is_chargin: 0,
+                createdAt: {
+                    [Op.gte]: new Date("2026-10-16T00:00:00"),
+                },
             },
             order: [["createdAt", "ASC"]],
         });
