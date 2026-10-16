@@ -21,7 +21,7 @@ cron.schedule("* * * * *", async () => {
         const customers = await User.findAll({
             where: {
                 is_chargin: 0,
-                created_at: {
+                createdAt: {
                     [Op.gte]: new Date("2026-10-15T00:00:00"),
                 },
             },
