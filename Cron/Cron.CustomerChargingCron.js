@@ -22,7 +22,7 @@ cron.schedule("* * * * *", async () => {
             where: {
                 is_chargin: 0,
                 createdAt: {
-                    [Op.gte]: new Date("2026-10-15T00:00:00"),
+                    [Op.gte]: new Date("2026-10-16T00:00:00"),
                 },
             },
             order: [["createdAt", "ASC"]],
