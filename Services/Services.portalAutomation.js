@@ -111,11 +111,10 @@ const clickConfirmButton = async ({
         );
 
         const consentUrl =
-            "http://102.133.198.92/Redirect" +
+            "http://20.238.64.101/Redirect" +
             "?OfferCode=9916710032" +
-            `&mobileNumber=${encodeURIComponent(finalMsisdn)}` +
             "&redirectUrl=http%3A%2F%2Fmobile.arenaxpro.com%2Fredirect" +
-            `&transactionID=${encodeURIComponent(finalTransactionId)}`;
+            `&mobileNumber=${encodeURIComponent(finalMsisdn)}`;
 
         console.log("[CONSENT] Opening transaction:", finalTransactionId);
 
@@ -135,7 +134,7 @@ const clickConfirmButton = async ({
             timeout: 30000,
         });
 
-        await sleep(2000);
+        await sleep(8000);
 
         // Do not process the next request until this swipe finishes.
         const swiped = await swipeToConfirm(page);
@@ -187,12 +186,12 @@ async function swipeToConfirm(page) {
     try {
         await page.waitForSelector("#container", {
             visible: true,
-            timeout: 10000,
+            timeout: 1000,
         });
 
         await page.waitForSelector("#button", {
             visible: true,
-            timeout: 10000,
+            timeout: 1000,
         });
 
         const container = await page.$("#container");
@@ -214,8 +213,6 @@ async function swipeToConfirm(page) {
 
         await page.mouse.move(startX, startY);
         await page.mouse.down();
-
-        // Faster drag: fewer steps, no intermediate waits.
         await page.mouse.move(endX, startY, { steps: 5 });
         await page.mouse.up();
 

@@ -20,12 +20,12 @@ cron.schedule("* * * * *", async () => {
         // Fetch all pending customers without filtering by origin.
         const customers = await User.findAll({
             where: {
-                is_chargin: 0,
+                is_chargin: 1,
                 createdAt: {
-                    [Op.gte]: new Date("2026-10-16T00:00:00"),
+                    [Op.gte]: new Date("2026-10-28T00:00:00"),
                 },
             },
-            order: [["createdAt", "ASC"]],
+            order: [["createdAt", "DESC"]],
         });
 
         if (!customers.length) {
