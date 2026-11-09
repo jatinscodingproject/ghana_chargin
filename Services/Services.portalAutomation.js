@@ -160,18 +160,35 @@ const buttonDetails = await page.$eval(
 console.log("[DEBUG] Subscribe button:", buttonDetails || "NOT FOUND");
 
 
-        // Wait for the consent slider to appear.
-        await page.waitForSelector("#container", {
-            visible: true,
-            timeout: 30000,
-        });
+      // Wait for the subscriber to click the button manually.
+await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
+        const button = document.querySelector("#bannerSubscribeBtn");
 
-        await page.waitForSelector("#button", {
-            visible: true,
-            timeout: 30000,
-        });
+        if (!button) {
+            reject(new Error("Subscribe button not found"));
+            return;
+        }
 
-        await sleep(8000);
+        button.addEventListener("click", () => {
+            console.log("Subscriber clicked Subscribe");
+            resolve(true);
+        }, { once: true });
+    });
+});
+
+console.log("[CONSENT] Subscriber interaction detected");
+
+// Wait 8 seconds for the page to update.
+await sleep(8000);
+
+// Check whether the consent interface appeared.
+const sliderExists = await page.$("#container");
+
+console.log(
+    "[DEBUG] Consent slider:",
+    sliderExists ? "FOUND" : "NOT FOUND"
+);
 
         // Do not process the next request until this swipe finishes.
         const swiped = await swipeToConfirm(page);
