@@ -1,52 +1,91 @@
+
 const puppeteer = require("puppeteer");
 const os = require("os");
 
 let browser = null;
+let launching = null;
 
 async function getBrowser() {
-  if (browser) return browser;
+    // Reuse only a connected browser.
+    if (browser) {
+        try {
+            if (browser.connected) {
+                return browser;
+            }
+        } catch (error) {
+            console.log("Browser connection check failed");
+        }
 
-  const isLinux = os.platform() === "linux";
-  const isWindows = os.platform() === "win32";
+        browser = null;
+    }
 
-  let executablePath;
+    // Prevent multiple Chrome launches.
+    if (launching) {
+        return launching;
+    }
 
-  if (isLinux) {
-    executablePath = "/usr/bin/chromium-browser";
-  } else if (isWindows) {
-    executablePath =
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-  }
+    const isLinux = os.platform() === "linux";
+    const isWindows = os.platform() === "win32";
 
-  browser = await puppeteer.launch({
-    headless: isLinux ? "new" : false,
-    executablePath,
+    let executablePath;
 
-    ignoreHTTPSErrors: true,
+    if (isLinux) {
+        executablePath = "/usr/bin/chromium-browser";
+    } else if (isWindows) {
+        executablePath =
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+    }
 
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-infobars",
-      "--disable-features=HttpsFirstMode",
-      "--disable-web-security",
-      ...(isLinux ? [] : ["--start-maximized"]),
-    ],
+    launching = (async () => {
+        const newBrowser = await puppeteer.launch({
+            headless: isLinux ? "new" : false,
 
-    ignoreDefaultArgs: ["--enable-automation"],
-  });
+            ...(executablePath ? { executablePath } : {}),
 
-  console.log("🚀 Chrome launched (shared browser)");
-  return browser;
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-infobars"
+            ]
+        });
+
+        browser = newBrowser;
+
+        newBrowser.on("disconnected", () => {
+            console.error("⚠️ Chrome disconnected");
+
+            if (browser === newBrowser) {
+                browser = null;
+            }
+        });
+
+        console.log("🚀 Chrome launched successfully");
+
+        return newBrowser;
+    })();
+
+    try {
+        return await launching;
+    } finally {
+        launching = null;
+    }
 }
 
 async function closeBrowser() {
-  if (browser) {
-    await browser.close();
+    const currentBrowser = browser;
     browser = null;
-    console.log("🛑 Chrome closed");
-  }
+
+    if (currentBrowser) {
+        try {
+            await currentBrowser.close();
+        } catch (error) {
+            console.error("Browser close error:", error.message);
+        }
+    }
 }
 
-module.exports = { getBrowser, closeBrowser };
+module.exports = {
+    getBrowser,
+    closeBrowser
+};

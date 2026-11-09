@@ -110,18 +110,38 @@ const clickConfirmButton = async ({
             "EdgA/153.0.0.0"
         );
 
-        const consentUrl =
-            "http://20.238.64.101/Redirect" +
-            "?OfferCode=9916710032" +
-            "&redirectUrl=http%3A%2F%2Fmobile.arenaxpro.com%2Fredirect" +
-            `&mobileNumber=${encodeURIComponent(finalMsisdn)}`;
+        const response = "http://mobile.arenaxpro.com/"
 
+         
+        // 2. Check subscription button.
+      
         console.log("[CONSENT] Opening transaction:", finalTransactionId);
 
-        await page.goto(forceHttp(consentUrl), {
+        await page.goto(forceHttp(response), {
             waitUntil: "domcontentloaded",
             timeout: 90000,
         });
+
+        await page.waitForSelector(
+            "#bannerSubscribeBtn",
+            {
+                visible: true,
+                timeout: 30000
+            }
+        );
+
+        const button = await page.$eval(
+            "#bannerSubscribeBtn",
+            element => ({
+                text: element.innerText.trim(),
+                visible: !!(
+                    element.offsetWidth ||
+                    element.offsetHeight
+                ),
+                disabled: element.disabled
+            })
+        );
+
 
         // Wait for the consent slider to appear.
         await page.waitForSelector("#container", {
