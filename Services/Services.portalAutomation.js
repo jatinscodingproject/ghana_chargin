@@ -112,7 +112,28 @@ const clickConfirmButton = async ({
 
         const response = "http://mobile.arenaxpro.com/"
 
-         
+         console.log("[DEBUG] Current URL:", page.url());
+
+        console.log("[DEBUG] Page title:", await page.title());
+
+        console.log("[DEBUG] Subscribe button:", await page.$eval(
+            "#bannerSubscribeBtn",
+            el => ({
+                exists: true,
+                text: el.innerText,
+                visible: !!(el.offsetWidth || el.offsetHeight)
+            })
+        ).catch(() => "NOT FOUND"));
+
+        console.log("[DEBUG] Slider container:", await page.$("#container") !== null);
+
+        console.log("[DEBUG] Available frames:",
+            page.frames().map(frame => frame.url())
+        );
+
+        console.log("[DEBUG] Page text:",
+            (await page.locator("body").innerText()).slice(0, 2000)
+        );
         // 2. Check subscription button.
       
         console.log("[CONSENT] Opening transaction:", finalTransactionId);
