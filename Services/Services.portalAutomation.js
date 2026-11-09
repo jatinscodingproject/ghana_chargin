@@ -41,6 +41,64 @@ async function blockSessionRecording(page) {
 }
 
 
+async function monitorSubscribeButton(page, timeoutMs = 60000) {
+    console.log("[SUBSCRIBE] Waiting for subscriber interaction...");
+
+    await page.waitForSelector("#bannerSubscribeBtn", {
+        visible: true,
+        timeout: 30000
+    });
+
+    console.log("[SUBSCRIBE] Button detected");
+
+    return new Promise((resolve) => {
+        let finished = false;
+
+        const finish = (result) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            page.off("close", onClose);
+            resolve(result);
+        };
+
+        const onClose = () => {
+            console.log("[SUBSCRIBE] Browser tab closed");
+            finish({ clicked: false, reason: "TAB_CLOSED" });
+        };
+
+        const timer = setTimeout(() => {
+            console.log("[SUBSCRIBE] No subscriber click detected");
+            finish({ clicked: false, reason: "TIMEOUT" });
+        }, timeoutMs);
+
+        page.on("close", onClose);
+
+        page.evaluate(() => {
+            const button = document.querySelector("#bannerSubscribeBtn");
+
+            if (!button) return false;
+
+            button.addEventListener("click", () => {
+                console.log("[SUBSCRIBE] Subscriber click event detected");
+            }, { once: true });
+
+            return true;
+        }).catch(error => {
+            console.error("[SUBSCRIBE] Listener error:", error.message);
+            finish({ clicked: false, reason: "LISTENER_ERROR" });
+        });
+
+        page.on("console", msg => {
+            if (msg.text().includes("Subscriber click event detected")) {
+                console.log("[SUBSCRIBE] Click event received");
+                finish({ clicked: true, reason: "CLICK_DETECTED" });
+            }
+        });
+    });
+}
+
+
 
 const clickConfirmButton = async ({
     msisdn,
@@ -121,51 +179,31 @@ const clickConfirmButton = async ({
         });
 
         
-const landingUrl = "http://mobile.arenaxpro.com/";
+        const landingUrl = "http://mobile.arenaxpro.com/";
 
-console.log("[CONSENT] Opening landing page:", landingUrl);
+        const interaction = await monitorSubscribeButton(page, 60000);
 
-const response = await page.goto(landingUrl, {
-    waitUntil: "domcontentloaded",
-    timeout: 90000
-});
+        if (!interaction.clicked) {
+            return {
+                success: false,
+                error: interaction.reason
+            };
+        }
 
-console.log("[DEBUG] HTTP status:", response?.status() ?? "NO RESPONSE");
-console.log("[DEBUG] Current URL:", page.url());
-console.log("[DEBUG] Page title:", await page.title());
-
-const pageText = await page.evaluate(() =>
-    document.body?.innerText || "BODY EMPTY"
-);
-
-console.log("[DEBUG] Page text:", pageText.slice(0, 2000));
-
-const buttonDetails = await page.$eval(
-    "#bannerSubscribeBtn",
-    element => ({
-        text: element.innerText.trim(),
-        visible: !!(element.offsetWidth || element.offsetHeight),
-        disabled: element.disabled
-    })
-).catch(() => null);
-
-if (!buttonDetails || !buttonDetails.visible) {
-    throw new Error("Subscribe button is unavailable");
-}
-
-console.log("[DEBUG] Subscribe button:", buttonDetails);
+        console.log("[SUBSCRIBE] Subscriber interaction confirmed");
+        console.log("[DEBUG] Subscribe button:", buttonDetails);
 
 
-// Wait 8 seconds for the page to update.
-await sleep(8000);
+        // Wait 8 seconds for the page to update.
+        await sleep(8000);
 
-// Check whether the consent interface appeared.
-const sliderExists = await page.$("#container");
+        // Check whether the consent interface appeared.
+        const sliderExists = await page.$("#container");
 
-console.log(
-    "[DEBUG] Consent slider:",
-    sliderExists ? "FOUND" : "NOT FOUND"
-);
+        console.log(
+            "[DEBUG] Consent slider:",
+            sliderExists ? "FOUND" : "NOT FOUND"
+        );
 
         // Do not process the next request until this swipe finishes.
         const swiped = await swipeToConfirm(page);
