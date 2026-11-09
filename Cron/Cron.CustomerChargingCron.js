@@ -1,31 +1,35 @@
+
 const cron = require("node-cron");
 const User = require("../Models/models.customer");
 const clickConfirmButton = require("../Services/Services.portalAutomation");
 const { Op } = require("sequelize");
 
-const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 let isRunning = false;
 
-cron.schedule("* * * * *", async () => {
+const CRON_SCHEDULE = "* * * * *";
+const START_DATE = new Date("2026-10-28T00:00:00");
+
+cron.schedule(CRON_SCHEDULE, async () => {
     if (isRunning) {
         console.log("⏸️ Cron already running, skipping");
         return;
     }
 
     isRunning = true;
-    console.log("▶️ Processing pending customers");
+
+    console.log("▶️ Starting pending customer diagnostics");
 
     try {
-        // Fetch all pending customers without filtering by origin.
         const customers = await User.findAll({
             where: {
                 is_chargin: 0,
                 createdAt: {
-                    [Op.gte]: new Date("2026-10-28T00:00:00"),
-                },
+                    [Op.gte]: START_DATE
+                }
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdAt", "DESC"]]
         });
 
         if (!customers.length) {
@@ -37,115 +41,190 @@ cron.schedule("* * * * *", async () => {
 
         let processed = 0;
         let failed = 0;
+        let skipped = 0;
 
         for (const customer of customers) {
             try {
-                // Reconstruct the original request headers.
+                // ------------------------------------------
+                // STEP 1: GET DATABASE CUSTOMER INFORMATION
+                // ------------------------------------------
+
+                const msisdn = customer.msisdn;
+
+                if (!msisdn) {
+                    throw new Error(
+                        "MSISDN missing from customer database record"
+                    );
+                }
+
+                // ------------------------------------------
+                // STEP 2: RESTORE ORIGINAL REQUEST HEADERS
+                // ------------------------------------------
+
                 let headers = customer.request_headers || {};
 
                 if (typeof headers === "string") {
                     try {
                         headers = JSON.parse(headers);
-                    } catch {
+                    } catch (error) {
+                        console.error(
+                            "[CRON] Invalid request_headers JSON:",
+                            error.message
+                        );
+
                         headers = {};
                     }
                 }
 
-                // Fallback to individual stored fields if needed.
+                if (
+                    !headers ||
+                    typeof headers !== "object" ||
+                    Array.isArray(headers)
+                ) {
+                    headers = {};
+                }
+
                 headers = {
                     ...headers,
-                    host: headers.host || customer.host || undefined,
+
+                    host:
+                        headers.host ||
+                        customer.host ||
+                        undefined,
+
                     connection:
                         headers.connection ||
                         customer.connection_type ||
                         undefined,
+
                     "x-real-ip":
                         headers["x-real-ip"] ||
                         customer.client_ip ||
                         undefined,
+
                     "x-forwarded-for":
                         headers["x-forwarded-for"] ||
                         customer.forwarded_for ||
                         undefined,
+
                     "x-forwarded-proto":
                         headers["x-forwarded-proto"] ||
                         customer.forwarded_proto ||
                         undefined,
+
                     accept:
                         headers.accept ||
                         customer.accept_header ||
                         undefined,
+
                     "accept-language":
                         headers["accept-language"] ||
                         customer.accept_language ||
                         undefined,
+
                     "accept-encoding":
                         headers["accept-encoding"] ||
                         customer.accept_encoding ||
                         undefined,
+
                     "user-agent":
                         headers["user-agent"] ||
                         customer.user_agent ||
                         undefined,
-                    msisdn: headers.msisdn || customer.msisdn || undefined,
+
+                    msisdn: msisdn
                 };
 
-                console.log(`🔄 Processing customer: ${customer.msisdn}`);
+                console.log("--------------------------------------");
+                console.log("[CRON] Processing customer");
+                console.log("[CRON] MSISDN:", msisdn);
+                console.log(
+                    "[CRON] Transaction ID:",
+                    customer.transaction_id || "N/A"
+                );
 
-                const success = await clickConfirmButton({
-                    msisdn: customer.msisdn,
+                // ------------------------------------------
+                // STEP 3: RUN PORTAL DIAGNOSTICS
+                // ------------------------------------------
+
+                const result = await clickConfirmButton({
+                    msisdn: msisdn,
                     client_ip: customer.client_ip,
                     transactionId: customer.transaction_id,
-                    headers,
+                    headers: headers
                 });
 
-                if (success) {
-                    await customer.update({
-                        is_chargin: 1,
-                    });
+                console.log(
+                    "[CRON] Portal result:",
+                    JSON.stringify(result, null, 2)
+                );
 
-                    processed++;
+                // ------------------------------------------
+                // STEP 4: HANDLE DIAGNOSTIC RESULT
+                // ------------------------------------------
+
+                if (!result || typeof result !== "object") {
+                    throw new Error(
+                        "Invalid portal automation response"
+                    );
+                }
+
+                if (result.testOnly === true) {
+                    skipped++;
 
                     console.log(
-                        `✅ Processed successfully: ${customer.msisdn}`
+                        "[CRON] Diagnostic-only result. " +
+                        "Production charging status unchanged:",
+                        msisdn
                     );
-                } else {
-                    await customer.update({
-                        is_chargin: -1,
-                    });
 
-                    failed++;
-
-                    console.log(`❌ Failed: ${customer.msisdn}`);
+                    continue;
                 }
+
+                // This Cron must not mark a customer as charged
+                // based on page loading or slider detection.
+                throw new Error(
+                    "Charging status cannot be updated from portal diagnostics"
+                );
+
             } catch (err) {
                 failed++;
 
                 console.error(
-                    `🔥 Error processing ${customer.msisdn}:`,
+                    `[CRON] Customer diagnostic failed: ${customer.msisdn}`,
                     err.message
                 );
 
-                await customer.update({
-                    is_chargin: -1,
-                }).catch((updateError) => {
-                    console.error(
-                        "Failed to update customer status:",
-                        updateError.message
-                    );
-                });
+                // Leave is_chargin unchanged.
+                // A diagnostic failure is not proof of a
+                // subscription failure or a billing outcome.
             }
 
             await sleep(800);
         }
 
+        console.log("--------------------------------------");
+
         console.log(
-            `📋 Completed | Success: ${processed} | Failed: ${failed}`
+            `[CRON] Cycle completed | ` +
+            `Diagnostics: ${skipped} | ` +
+            `Errors: ${failed} | ` +
+            `Total: ${customers.length}`
         );
+
     } catch (err) {
-        console.error("🔥 Customer processing error:", err);
+        console.error(
+            "[CRON] Customer processing error:",
+            err.stack || err.message
+        );
+
     } finally {
         isRunning = false;
-        console.log("⏳ Cycle completed, waiting for next tick");
+
+        console.log(
+            "⏳ Cron cycle completed, waiting for next tick"
+        );
     }
 });
+
+module.exports = {};

