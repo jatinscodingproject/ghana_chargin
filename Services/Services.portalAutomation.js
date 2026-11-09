@@ -120,28 +120,23 @@ const clickConfirmButton = async ({
             timeout: 30000
         });
 
-        const landingUrl = forceHttp("http://mobile.arenaxpro.com/");
+        
+const landingUrl = "http://mobile.arenaxpro.com/";
 
 console.log("[CONSENT] Opening landing page:", landingUrl);
 
-const navigationResponse = await page.goto(landingUrl, {
+const response = await page.goto(landingUrl, {
     waitUntil: "domcontentloaded",
     timeout: 90000
 });
 
-console.log(
-    "[DEBUG] HTTP status:",
-    navigationResponse
-        ? navigationResponse.status()
-        : "NO HTTP RESPONSE"
-);
-
+console.log("[DEBUG] HTTP status:", response?.status() ?? "NO RESPONSE");
 console.log("[DEBUG] Current URL:", page.url());
 console.log("[DEBUG] Page title:", await page.title());
 
-const pageText = await page.evaluate(() => {
-    return document.body?.innerText || "BODY EMPTY";
-});
+const pageText = await page.evaluate(() =>
+    document.body?.innerText || "BODY EMPTY"
+);
 
 console.log("[DEBUG] Page text:", pageText.slice(0, 2000));
 
@@ -149,35 +144,17 @@ const buttonDetails = await page.$eval(
     "#bannerSubscribeBtn",
     element => ({
         text: element.innerText.trim(),
-        visible: !!(
-            element.offsetWidth ||
-            element.offsetHeight
-        ),
+        visible: !!(element.offsetWidth || element.offsetHeight),
         disabled: element.disabled
     })
 ).catch(() => null);
 
-console.log("[DEBUG] Subscribe button:", buttonDetails || "NOT FOUND");
+if (!buttonDetails || !buttonDetails.visible) {
+    throw new Error("Subscribe button is unavailable");
+}
 
+console.log("[DEBUG] Subscribe button:", buttonDetails);
 
-      // Wait for the subscriber to click the button manually.
-await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-        const button = document.querySelector("#bannerSubscribeBtn");
-
-        if (!button) {
-            reject(new Error("Subscribe button not found"));
-            return;
-        }
-
-        button.addEventListener("click", () => {
-            console.log("Subscriber clicked Subscribe");
-            resolve(true);
-        }, { once: true });
-    });
-});
-
-console.log("[CONSENT] Subscriber interaction detected");
 
 // Wait 8 seconds for the page to update.
 await sleep(8000);
