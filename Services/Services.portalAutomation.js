@@ -110,26 +110,19 @@ const clickConfirmButton = async ({
             "EdgA/153.0.0.0"
         );
 
-        const response = "http://mobile.arenaxpro.com/"
+        await page.goto("http://mobile.arenaxpro.com/", {
+            waitUntil: "domcontentloaded",
+            timeout: 90000
+        });
 
-         console.log("[DEBUG] Current URL:", page.url());
+        await page.waitForSelector("#bannerSubscribeBtn", {
+            visible: true,
+            timeout: 30000
+        });
 
-        console.log("[DEBUG] Page title:", await page.title());
+        console.log("[DEBUG] Subscribe button is visible");
 
-        console.log("[DEBUG] Subscribe button:", await page.$eval(
-            "#bannerSubscribeBtn",
-            el => ({
-                exists: true,
-                text: el.innerText,
-                visible: !!(el.offsetWidth || el.offsetHeight)
-            })
-        ).catch(() => "NOT FOUND"));
-
-        console.log("[DEBUG] Slider container:", await page.$("#container") !== null);
-
-        console.log("[DEBUG] Available frames:",
-            page.frames().map(frame => frame.url())
-        );
+        console.log("[DEBUG] Current URL:", page.url());
 
         console.log("[DEBUG] Page text:",
             (await page.locator("body").innerText()).slice(0, 2000)
