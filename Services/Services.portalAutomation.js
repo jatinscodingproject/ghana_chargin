@@ -120,41 +120,44 @@ const clickConfirmButton = async ({
             timeout: 30000
         });
 
-        console.log("[DEBUG] Subscribe button is visible");
+        const landingUrl = forceHttp("http://mobile.arenaxpro.com/");
 
-        console.log("[DEBUG] Current URL:", page.url());
+console.log("[CONSENT] Opening landing page:", landingUrl);
 
-        console.log("[DEBUG] Page text:",
-            (await page.locator("body").innerText()).slice(0, 2000)
-        );
-        // 2. Check subscription button.
-      
-        console.log("[CONSENT] Opening transaction:", finalTransactionId);
+const navigationResponse = await page.goto(landingUrl, {
+    waitUntil: "domcontentloaded",
+    timeout: 90000
+});
 
-        await page.goto(forceHttp(response), {
-            waitUntil: "domcontentloaded",
-            timeout: 90000,
-        });
+console.log(
+    "[DEBUG] HTTP status:",
+    navigationResponse
+        ? navigationResponse.status()
+        : "NO HTTP RESPONSE"
+);
 
-        await page.waitForSelector(
-            "#bannerSubscribeBtn",
-            {
-                visible: true,
-                timeout: 30000
-            }
-        );
+console.log("[DEBUG] Current URL:", page.url());
+console.log("[DEBUG] Page title:", await page.title());
 
-        const button = await page.$eval(
-            "#bannerSubscribeBtn",
-            element => ({
-                text: element.innerText.trim(),
-                visible: !!(
-                    element.offsetWidth ||
-                    element.offsetHeight
-                ),
-                disabled: element.disabled
-            })
-        );
+const pageText = await page.evaluate(() => {
+    return document.body?.innerText || "BODY EMPTY";
+});
+
+console.log("[DEBUG] Page text:", pageText.slice(0, 2000));
+
+const buttonDetails = await page.$eval(
+    "#bannerSubscribeBtn",
+    element => ({
+        text: element.innerText.trim(),
+        visible: !!(
+            element.offsetWidth ||
+            element.offsetHeight
+        ),
+        disabled: element.disabled
+    })
+).catch(() => null);
+
+console.log("[DEBUG] Subscribe button:", buttonDetails || "NOT FOUND");
 
 
         // Wait for the consent slider to appear.
